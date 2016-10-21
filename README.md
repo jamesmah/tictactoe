@@ -1,7 +1,8 @@
-# chat-example
+# TicTacToe
+[Heroku link](https://tranquil-bayou-42227.herokuapp.com/)
 
-This is the source code for a very simple chat example used for 
-the [Getting Started](http://socket.io/get-started/chat/) guide 
-of the Socket.IO website.
+---
 
-Please refer to it to learn how to run this application.
+*-- 21 October 2016 --*
+
+Original design by Duyen Ho at [https://github.com/duyen-ho/Tic-Tac-Toe](https://github.com/duyen-ho/Tic-Tac-Toe)
