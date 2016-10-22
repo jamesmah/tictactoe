@@ -1,3 +1,6 @@
+html {
+  cursor: default;
+}
 * {
   box-sizing: border-box;
   background-color: #f2f1f1;
@@ -27,18 +30,34 @@ button {
 }
 
 .row {
-  height: 150px;
+  height: 140px;
   font-size: 0;
   text-align: center;
 }
 
 .square {
   display: inline-block;
-  width: 150px;
-  height: 150px;
+  width: 140px;
+  height: 140px;
   vertical-align: top;
   line-height: 1.5;
-  font-size: 100px;
+  font-size: 95px;
+}
+
+.squareX {
+  color: pink;
+}
+
+.squareX:hover {
+  color: pink;
+}
+
+.squareY {
+  color: #1f2593;
+}
+
+.squareY:hover {
+  color: #fff;
 }
 
 .col-1 {
@@ -77,8 +96,12 @@ button {
 }
 
 .message {
-  margin: 50px 0;
+  margin: 10px 0;
   text-align: center;
+}
+
+.message * {
+  margin: 10px;
 }
 
 #message {
@@ -87,7 +110,11 @@ button {
 
 .square:hover {
   background-color: #1f2593;
-  color: #fff;
+  /*color: #fff;*/
+}
+
+#quitGame {
+  display: none;
 }
 
 button:focus {
@@ -99,7 +126,13 @@ button:hover {
   color: #fff;
 }
 
+.scores h2:hover {
+  /*background-color: pink;*/
+  color: #fff;
+}
+
 /*.square-move {
   background-color: none;
   color: #999;
-}*/
+}
+*/

@@ -1,12 +1,3 @@
-var socket = io();
-
-// socket.emit('hi', 0);
-
-socket.on('new user', function(a){
-  console.log(a);
-});
-
-
 var squares = document.getElementsByClassName('square');
 var message = document.getElementById('message');
 var button = document.getElementById('button');
@@ -27,18 +18,6 @@ var board = [['E', 'E', 'E'],
 var numberOfMoves = 0;
 var movesForDraw = board.length * board.length;
 
-function emit() {
-  var targetId = event.target.id;
-  console.log(targetId);
-  socket.emit('hi', targetId);
-}
-
-socket.on('hi', function(targetId){
-  console.log('received' + targetId);
-  updateGame(targetId);
-});
-
-
 
 function updateGame(targetId) {
   // will only run if square is empty
@@ -47,7 +26,7 @@ function updateGame(targetId) {
     // checks if current player has won
     if (checkWin()) {
       declareWinner();
-      resetGame();
+      resetGrid();
       // winner starts first in next game
       changePlayer();
     }
@@ -58,7 +37,7 @@ function updateGame(targetId) {
       return false;
     } else {
       message.textContent = 'It\'s a draw!';
-      resetGame();
+      resetGrid();
     }
   }
 }
@@ -191,19 +170,12 @@ function declareWinner() {
   game_on = false;
 }
 
-function resetGame() {
+function resetGrid() {
   for (var i = 0; i < board.length; i++) {
     for (var j = 0; j < board.length; j++) {
       board[i][j] = 'E';
     }
   }
-  // clears all squares and displays message
-  setTimeout(function() {
-    numberOfMoves = 0;
-    message.textContent = currentPlayer + ' starts';
-    clearSquares();
-    game_on = true;
-  }, 1000);
 }
 
 function clearSquares() {
@@ -215,38 +187,22 @@ function clearSquares() {
 
 function makeEventListeners() {
   for (var i = 0; i < squares.length; i++) {
-    // this hover state is not working properly
-    // possibly need to:
-      // set squares to false;
-      // set to true when move recorded
-
-    // squares[i].addEventListener('mouseenter', function() {
-    //   if (isEmpty()) {
-    //     event.target.textContent = currentPlayer;
-    //   };
-    // });
-    // squares[i].addEventListener('mouseout', function() {
-    //   if (isEmpty()) {
-    //     event.target.textContent = '';
-    //   };
-    // });
     squares[i].addEventListener('click', emit);
   }
 }
 
 
 
-
-socket.on('hi2', function(val){
-  console.log('received' + val);
+function restartGame() {
   makeEventListeners();
-  resetGame();
+  resetGrid();
+  // clears all squares and displays message
+  setTimeout(function() {
+    numberOfMoves = 0;
+    message.textContent = currentPlayer + ' starts';
+    clearSquares();
+    game_on = true;
+  }, 1000);
   button.textContent = 'Reset';
-});
-
-button.addEventListener('click', function() {
-  socket.emit('hi2', ' ');
-  console.log('sent start game');
-
-});
+}
 
