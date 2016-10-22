@@ -44,22 +44,6 @@ button {
   font-size: 95px;
 }
 
-.squareX {
-  color: pink;
-}
-
-.squareX:hover {
-  color: pink;
-}
-
-.squareY {
-  color: #1f2593;
-}
-
-.squareY:hover {
-  color: #fff;
-}
-
 .col-1 {
   border-right: 5px solid #fff;
   border-bottom: 5px solid #fff;
@@ -110,7 +94,23 @@ button {
 
 .square:hover {
   background-color: #1f2593;
-  /*color: #fff;*/
+  color: #fff;
+}
+
+.squareX {
+  color: pink;
+}
+
+.squareX:hover {
+  color: pink;
+}
+
+.squareY {
+  color: #1f2593;
+}
+
+.squareY:hover {
+  color: #fff;
 }
 
 #quitGame {
