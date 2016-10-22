@@ -146,7 +146,7 @@ $('#quitGame').click(function() {
   
   var tictactoe = ['T','I','C','T','A','C','T','O','E'];
   for (var i = 0; i < tictactoe.length; i++) {
-    $('.grid > div > div:eq(' + i + ')').text(tictactoe[i]).css('color', '#1f2593');
+    $('.grid > div > div:eq(' + i + ')').text(tictactoe[i]);
   }
 
   $('#quitGame').hide();
