@@ -1,0 +1,43 @@
+.anima {
+    animation-duration: 2s;
+    opacity: 0;
+    animation-timing-function: ease-in-out;
+}
+
+.anima1 {
+    animation-name: example1;
+}
+
+@keyframes example1 {
+    0%   {transform: scale(1, 1);
+          opacity: 1;}
+    100% {transform: scale(3, 3)
+                     translate(33.333%, 33.333%);
+          opacity: 0;}
+}
+
+
+.anima7 {
+    animation-name: example6;
+}
+
+@keyframes example7 {
+    0%   {transform: scale(1, 1);
+          opacity: 1;}
+    100% {transform: scale(3, 3)
+                     translate(33.333%, -33.333%);
+          opacity: 0;}
+}
+
+
+
+
+section.watermark {
+  position: absolute;
+  left: calc(100vw/2 - 10vh/2);
+  width: 10vh;
+  text-align: center;
+  font-size: 4vh;
+  margin: auto;
+  bottom: 0%;
+}

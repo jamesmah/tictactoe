@@ -10,10 +10,10 @@ var connected_users = [];
 
 console.log('hi there');
 
-var rooms = [new room(),new room(),new room(),
-             new room(),new room(),new room(),
-             new room(),new room(),new room(),
-             new room()]; // Use 1-9
+var rooms = [];
+for (var i = 0; i <= 9; i++) {
+  rooms[i] = new room();
+}
 
 function room() {
   this.viewers = [];
@@ -26,26 +26,10 @@ function room() {
   this.pauseplay = false;
 }
 
-
-
-function initialiseRoom(room) {
-
-}
-
-function resetBoard(room) {
-
-}
-
 function otherShape(shape) {
-  if (shape === 'O') {
-    return 'X';
-  }
-  else if (shape === 'X') {
-    return 'O';
-  }
-  else {
-    return '';
-  }
+  if (shape === 'O') {return 'X';}
+  else if (shape === 'X') {return 'O';}
+  else {return '';}
 }
 
 io.on('connection', function(socket){
@@ -54,7 +38,6 @@ io.on('connection', function(socket){
   var playerRoom = 0;
   var playerShape = "";
   var playerScore = 0;
-
 
   socket.on('clickOnRoom', function(roomId){
     if (roomId >= 1 && roomId <=9) {
@@ -167,6 +150,31 @@ io.on('connection', function(socket){
             io.emit('displayTurn', rooms[playerRoom].turn);
           }, 1000);
         }
+
+        var gridComplete = true;
+
+        for(var i = 0; i < 9; i++){
+          if (g[i] === undefined) {
+            gridComplete = false;
+          }
+        }
+
+        console.log(gridComplete);
+
+        if(gridComplete) {
+          io.emit('player draw', playerShape);
+          // reset room
+          rooms[playerRoom].grid = [];
+          rooms[playerRoom].startingPlayer = otherShape(rooms[playerRoom].startingPlayer);
+          rooms[playerRoom].turn = rooms[playerRoom].startingPlayer;
+          // transmit to all other players and reset
+          rooms[playerRoom].pauseplay = true;
+          setTimeout(function() {
+            io.emit('resetRoom', ''); // only to viewers of this room
+            rooms[playerRoom].pauseplay = false;
+            io.emit('displayTurn', rooms[playerRoom].turn);
+          }, 1000);
+        }
       }
     }
 
@@ -242,12 +250,22 @@ server.listen(port, function () {
 });
 
 // Routing
+// app.set('port', (process.env.PORT || 5000));
+
 app.use(express.static(__dirname + '/public'));
 
-app.get('/*', function(req, res){
-    if(chats[req.url.substring(1)]){
-        res.sendFile(__dirname + '/public/chat.html');
-    }else{
-        res.sendFile(__dirname + '/public/404.html');
-    }
+app.set('view engine', 'ejs');
+
+app.get('/', function(request, response) {
+  response.render('pages/index');
+});
+
+app.get('/:id', function(request, response){
+  var roomId = request.url.replace(/[\/]/g, "");
+  if (roomId >= 1 && roomId <= 9) {
+    response.render('pages/room');
+  }
+  else {
+    response.render('pages/404');
+  }
 });

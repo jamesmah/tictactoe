@@ -3,6 +3,7 @@ var socket = io();
 // clickOnRoomTransmit(2);
 // clickOnPlayerShapeTransmit('X');
 
+var roomId =  location.pathname.replace(/[\/]/g, "");
 
 function retrieveServerInfo() {
   socket.emit('retrieveServerInfo', '');
@@ -80,6 +81,13 @@ socket.on('player win', function(shape) {
   // reset board
   console.log(shape + 'wins');
   $('#message').text(shape + ' wins!');
+});
+
+socket.on('player draw', function(shape) {
+  // show victory
+  // reset board
+  console.log("It's a draw!");
+  $('#message').text("It's a draw!");
 });
 
 socket.on('score update', function(scores) {

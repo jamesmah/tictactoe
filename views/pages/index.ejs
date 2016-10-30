@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% include ../partials/head.ejs %>
+    <link rel="stylesheet" href="/css/index.css">
+  </head>
+
+  <body>
+    <section class="message">
+      <p id="message">Pick a room</p>
+    </section>
+
+    <div class="grid-wrapper">
+      <section class="grid">
+        <div class="row row-1">
+          <div class="square col-1">T</div>
+          <div class="square col-2">I</div>
+          <div class="square col-3">C</div>
+        </div>
+        <div class="row row-2">
+          <div class="square col-1">T</div>
+          <div class="square col-2">A</div>
+          <div class="square col-3">C</div>
+        </div>
+        <div class="row row-3">
+          <div id="S7" class="square col-1">T</div>
+          <div id="S8" class="square col-2">O</div>
+          <div id="S9" class="square col-3">E</div>
+        </div>
+      </section>
+    </div>
+
+    <section class="watermark">
+      <p>●_●</p>
+    </section>
+
+    <% include ../partials/scripts.ejs %>
+    <script src="/scripts/index.js"></script>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% include ../partials/head.ejs %>
+    <link rel="stylesheet" href="/css/room.css">
+  </head>
+
+  <body>
+
+    <section class="scores" id="shapeSelection">
+      <div class="player-1">
+        <h2 class="left">X</h2>
+        <p>Score:
+          <span id="score-P1">0</span>
+        </p>
+      </div>
+      <div class="player-2">
+        <h2 class="right">O</h2>
+        <p>Score:
+          <span id="score-P2">0</span>
+        </p>
+      </div>
+    </section>
+
+    <section class="grid roomSelection">
+      <div class="row row-1">
+        <div id="S1" class="square col-1">T</div>
+        <div id="S2" class="square col-2">O</div>
+        <div id="S3" class="square col-3">C</div>
+      </div>
+      <div class="row row-2">
+        <div id="S4" class="square col-1">T</div>
+        <div id="S5" class="square col-2">A</div>
+        <div id="S6" class="square col-3">C</div>
+      </div>
+      <div class="row row-3">
+        <div id="S7" class="square col-1">T</div>
+        <div id="S8" class="square col-2">O</div>
+        <div id="S9" class="square col-3">E</div>
+      </div>
+    </section>
+
+    <section class="message">
+      <p id="message">●_●</p>
+      <button id="quitGame">Quit</button>
+    </section>
+
+    <% include ../partials/scripts.ejs %>
+    <script src="/scripts/room.js"></script>
+  </body>
+</html>
