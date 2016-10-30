@@ -1,190 +1,104 @@
+$('.message, .scoreboard').fadeIn(1000);
+
 var socket = io();
+socket.roomId =  location.pathname.replace(/[\/]/g, "");
 
-// clickOnRoomTransmit(2);
-// clickOnPlayerShapeTransmit('X');
-
-var roomId =  location.pathname.replace(/[\/]/g, "");
-
-function retrieveServerInfo() {
-  socket.emit('retrieveServerInfo', '');
-}
-
-socket.on('retrieveServerInfo', function(data) {
-  console.log(data[0]);
-  console.log(data[0][5]);
-  console.log(data[1]);
-  console.log(data[2]);
-  console.log(data[3]);
-  console.log(data[4]);
+// click functions
+$('#exit').click(function() {
+  $('.message, .scoreboard').fadeOut(300);
+  $('.grid').fadeOut(1000);
+  setTimeout(function() {
+    window.location = "/";
+  }, 1000);
 });
 
-
-
-
-function clickOnRoomTransmit(roomId) {
-  // send click data to server
-  socket.emit('clickOnRoom', roomId);
-}
-
-function clickOnPlayerShapeTransmit(shape) {
-  socket.emit('clickOnPlayerShape', shape);
-}
-
-function submitUsernameTransmit(username) {
-  socket.emit('usernameInput', username);
-}
-
-function clickOnAGridTransmit(gridId) {
-  socket.emit('clickOnAGrid', gridId);
-}
-
-function exitRoomTransmit() {
-  socket.emit('exitRoom', '');
-}
-
-
-socket.on('goIntoRoom', function(roomData){
-  goIntoRoom(roomData);
+$('.scoreboard > div').click(function() {
+  var shapeId = $('.scoreboard > div').index($(event.target).closest('div'));
+  socket.emit('shape select', {shapeId: shapeId});
 });
-
-function goIntoRoom(roomData){
-  //with room data, set up room with animation
-}
-
-socket.on('activateShapePromptUsernameInput', function(shape) {
-  // activate shape and prompt username input
-  activateShape(shape);
-  $('#usernameInput').show();
-  // if username not inputted before
-});
-
-function activateShape(shape) {
-
-}
-
-socket.on('placeGrid', function(gridData) {
-  var gridId = gridData[0];
-  var playerShape = gridData[1];
-  // place gridshape on Id
-  $('.grid > div > div:eq(' + gridId + ')').text(playerShape);
-  if (playerShape === 'X') {
-    $('.grid > div > div:eq(' + gridId + ')').addClass('squareX');
-  }
-  else {
-    $('.grid > div > div:eq(' + gridId + ')').addClass('squareY');
-    // $('.grid > div > div:hover:eq(' + gridId + ')').css('color','#fff');
-  }
-});
-
-socket.on('player win', function(shape) {
-  // show victory
-  // reset board
-  console.log(shape + 'wins');
-  $('#message').text(shape + ' wins!');
-});
-
-socket.on('player draw', function(shape) {
-  // show victory
-  // reset board
-  console.log("It's a draw!");
-  $('#message').text("It's a draw!");
-});
-
-socket.on('score update', function(scores) {
-  // update scores with array
-  $('#score-P1').text(scores.X);
-  $('#score-P2').text(scores.O);
-});
-
-
 
 $('.grid').click(function() {
-  if ($('.grid').hasClass('roomSelection') ) {
-    var roomId = $('.roomSelection > div > div').index($(event.target).closest('div')) + 1;
-    console.log(roomId);
-    if (roomId >= 1 && roomId <= 9) {
-      clickOnRoomTransmit(roomId);
-      // $('.roomSelection').hide();
-      // $('#gameDisplay').show();
-      $('#quitGame').show();
-      resetGrid();
-      $('.grid').toggleClass("roomSelection gameGrid");
-      $('#message').text("Choose a side");
+  var gridId = $('.square').index($(event.target).closest('.square'));
+  socket.emit('grid select', {gridId: gridId});
+});
+
+// socket functions
+socket.on('roomId request', function(data) {
+  socket.emit('add user', {roomId: socket.roomId});
+});
+
+socket.on('room data', function(room) {
+  if (room.playerId.X !== '') {
+    $('.scoreboard p:eq(0)').text('Score: ' + room.playerScore.X).removeClass('shape-select');
+  }
+  if (room.playerId.O !== '') {
+    $('.scoreboard p:eq(1)').text('Score: ' + room.playerScore.O).removeClass('shape-select');
+  }
+  if (room.gamestart) {
+    for (var i = 0; i < 9; i++) {
+      if (room.grid[i] === 'O' || room.grid[i] === 'X') {
+        $('.grid span:eq(' + i + ')').text(room.grid[i]);
+      }
     }
-  }
-  else if ($('.grid').hasClass('gameGrid') ) {
-    var gridId = $('.gameGrid > > div').index($(event.target).closest('div'));
-    console.log(gridId);
-    clickOnAGridTransmit(gridId);
+    $('#message p').text("Player " + room.turn + "'s turn");
   }
 });
 
-$('#shapeSelection').click(function() {
-  var shapeId = $('#shapeSelection > div').index($(event.target).closest('div'));
-  if (shapeId === 0) {
-    console.log('X');
-    clickOnPlayerShapeTransmit('X');
+socket.on('shape selection successful', function(data) {
+  $('.scoreboard h2:eq(' + data.shapeId + ')').addClass('shape-assigned');
+});
+
+socket.on('shape selected', function(data) {
+  $('.scoreboard p:eq(' + data.shapeId + ')').text('Score: 0').removeClass('shape-select');
+  if (data.shapeId === 0) {
+    $('#message p').text("Player X joined");
   }
-  else if (shapeId === 1) {
-    console.log('O');
-    clickOnPlayerShapeTransmit('O');
+  else if (data.shapeId === 1) {
+    $('#message p').text("Player O joined");
   }
 });
 
-// $('.gameGrid').click(function() {
-//   var gridId = $('.gameGrid > > div').index($(event.target).closest('div'));
-//   console.log(gridId);
-//   clickOnAGridTransmit(gridId);
-// });
-
-
-// $('button').click(function() {
-//   submitUsernameTransmit( $('input').val() );
-//   $('#usernameInput').hide();
-// });
-
-
-$('#quitGame').click(function() {
-  exitRoomTransmit();
-  // $('.roomSelection').show();
-  // $('#gameDisplay').hide();
-  // $('#usernameInput').hide();
-
-  resetGrid();
-  
-  var tictactoe = ['T','I','C','T','A','C','T','O','E'];
-  for (var i = 0; i < tictactoe.length; i++) {
-    $('.grid > div > div:eq(' + i + ')').text(tictactoe[i]);
-  }
-
-  $('#quitGame').hide();
-  $('.grid').toggleClass("roomSelection gameGrid").removeClass('squareX squareY');
-  $('#message').text('●_●');
-
+socket.on('shape deselection successful', function(data) {
+  $('.scoreboard h2:eq(' + data.shapeId + ')').removeClass('shape-assigned');
 });
 
-socket.on('displayTurn', function(turn) {
-  if (turn !== '') {
-    $('#message').text(turn + "'s turn");
+socket.on('shape deselected', function(data) {
+  $('.scoreboard p:eq(' + data.shapeId + ')').text('Select').addClass('shape-select');
+  if (data.shapeId === 0) {
+    $('#message p').text("Player X left..");
   }
-  else {
-    $('#message').text("");
+  else if (data.shapeId === 1) {
+    $('#message p').text("Player O left..");
   }
 });
 
-socket.on('resetRoom', function(empty) {
-  if ( $('.grid').hasClass('gameGrid') ) {
-    $('.grid > div > div').text('').removeClass('squareX squareY');
+socket.on('game start', function(data) {
+  $('#message p').text("Player " + data.turn + " starts");
+});
+
+socket.on('game turn', function(data) {
+  $('#message p').text("Player " + data.turn + "'s turn");
+});
+
+socket.on('player win', function(data) {
+  $('#message p').text("Player " + data.shape + " wins!");
+});
+
+socket.on('player draw', function(data) {
+  $('#message p').text("It's a draw!");
+});
+
+socket.on('place grid', function(data) {
+  $('.square span:eq(' + data.gridId + ')').text(data.shape);
+  if (data.playerTurn) {
+    $('.square span:eq(' + data.gridId + ')').addClass('player-color');
   }
 });
 
-
-function resetGrid() {
-  $('.grid > div > div').text('').removeClass('squareX squareY');
-}
-
-$('.scores h2').click(function() {
-  event.target.style.color = 'pink';
+socket.on('reset grid', function(data) {
+  $('.grid span').text("").removeClass('player-color');
 });
 
-
+socket.on('score update', function(data) {
+  $('.scoreboard p:eq(' + data.shapeId + ')').text('Score: ' + data.score);
+});

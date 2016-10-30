@@ -1,0 +1,143 @@
+* {
+  box-sizing: border-box; 
+}
+html {
+  cursor: default;
+  font-family: 'Quicksand', sans-serif;
+  color: #1f2593;
+}
+body {
+  margin: auto;
+  background-color: #f2f1f1;
+}
+
+section {
+  position: absolute;
+}
+
+.message {
+  display: none;
+  text-align: center;
+  width: 50vh;
+  left: calc(100vw/2 - 50vh/2);
+  top: 8vh;
+  font-size: 3vh;
+}
+
+.message p {
+  margin: .8vh;
+}
+
+#exit {
+  width: 30vh;
+  left: calc(100vw/2 - 30vh/2);
+  top: 2.5vh;
+  font-size: 2.5vh;
+  /*background-color: #1f2593;*/
+  /*color: #fff;*/
+  border-radius: 2.5vh;
+}
+
+#exit:hover {
+  /*background-color: #fff;*/
+  /*color: #1f2593;*/
+  background-color: #1f2593;
+  color: #fff;
+}
+
+.grid {
+  left: calc(100vw/2 - 69vh/2);
+  top: 17vh;
+  width: 69vh;
+  height: 69vh;
+}
+
+.row {
+  text-align: center;
+}
+
+.square {
+  float: left;
+  width: 23vh;
+  height: 23vh;
+  vertical-align: top;
+  padding: 2vh;
+  font-size: 15.5vh;
+  border: .4vh solid #fff;
+  position: relative;
+}
+
+.watermark {
+  left: calc(100vw/2 - 10vh/2);
+  width: 10vh;
+  text-align: center;
+  font-size: 4vh;
+  margin: auto;
+  top: 86vh;
+}
+
+.square-hover:hover {
+  background-color: #1f2593;
+  color: #fff;
+}
+
+.row-1 > div {
+  border-top: none;
+}
+
+.row-3 > div {
+  border-bottom: none;
+}
+
+.row > .col-3 {
+  border-right: none;
+}
+
+.row > .col-1 {
+  border-left: none;
+}
+
+
+@media screen and (max-aspect-ratio: 69/100) {
+  .message {
+    display: none;
+    left: calc(100vw/2 - 100/3/23*30vw/2);
+    top: calc(100/3/23*8vw);
+    width: calc(100/3/23*30vw);
+    font-size: calc(100/3/23*3vw);
+  }
+  .message p {
+    margin: calc(100/3/23*.8vw);
+  }
+  #exit {
+    top: calc(100/3/23*2.5vw);
+    font-size: calc(100/3/23*2.5vw);
+    border-radius: calc(100/3/23*2.5vw);
+  }
+
+  .grid {
+    left: 0;
+    top: calc(100/3/23*17vw);
+    width: 100vw;
+    height: 100vw;
+  }
+  .square {
+    float: left;
+    width: calc(100/3/23*23vw);
+    height: calc(100/3/23*23vw);
+    vertical-align: top;
+    padding: calc(100/3/23*2vw);
+    font-size: calc(100/3/23*15.5vw);
+  }
+
+  .square {
+    border: calc(100/3/23*.4vw) solid #fff;
+  }
+
+  section.watermark {
+    left: calc(100vw/2 - 100/3/23*10vw/2);
+    width: calc(100/3/23*10vw);
+    font-size: calc(100/3/23*4vw);
+    top: calc(100/3/23*86vw);
+  }
+}

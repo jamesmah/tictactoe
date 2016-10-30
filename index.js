@@ -5,151 +5,56 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
 
-var connected_users = [];
-
-
-console.log('hi there');
-
 var rooms = [];
 for (var i = 0; i <= 9; i++) {
   rooms[i] = new room();
 }
 
 function room() {
-  this.viewers = [];
   this.playerId = {O:'', X:''};
-  this.playerName = {O:'', X:''};
   this.playerScore = {O:0, X:0};
   this.grid = [];
   this.turn = ''; // X or O
   this.startingPlayer = ''; // X or O
-  this.pauseplay = false;
-}
-
-function otherShape(shape) {
-  if (shape === 'O') {return 'X';}
-  else if (shape === 'X') {return 'O';}
-  else {return '';}
+  this.gamestart = false;
 }
 
 io.on('connection', function(socket){
-  var playerId = socket.id;
-  var playerName = "";
-  var playerRoom = 0;
-  var playerShape = "";
-  var playerScore = 0;
+  // get users roomId
+  socket.emit('roomId request', {});
 
-  socket.on('clickOnRoom', function(roomId){
-    if (roomId >= 1 && roomId <=9) {
-      rooms[roomId].viewers.push(playerId);
-      io.emit('goIntoRoom', room[roomId]);
-      playerRoom = roomId;
+  socket.on('add user', function (data) {
+    socket.roomId = data.roomId;
+    socket.join(socket.roomId);
+    socket.emit('room data', rooms[socket.roomId]);
+  });
+
+  socket.on('disconnect', function() {
+    removePlayer(0);
+    removePlayer(1);
+  });
+
+  socket.on('shape select', function(data){
+    var shape = idToShape(data.shapeId);
+    // check if not succesfully removed player
+    if (!removePlayer(data.shapeId)) {
+      addPlayer(data.shapeId);
     }
   });
 
-  socket.on('clickOnPlayerShape', function(shape){
-    previousShape = playerShape;
-    // if O or X available
-    // assign player to room shape
-    if (playerShape !== shape && (shape == 'X' || shape == 'O') && playerRoom!==0) {
-      if (rooms[playerRoom].playerId[shape] === "") {
-        playerShape = shape;
-        rooms[playerRoom].playerId[shape] = playerId;
+  socket.on('grid select', function(data){
 
-        if (previousShape !== '' && previousShape === otherShape(shape)) {
-          // remove player from shape
-          rooms[playerRoom].playerId[previousShape] = '';
-          rooms[playerRoom].playerName[previousShape] = '';
-          rooms[playerRoom].playerScore[previousShape] = 0;
-          rooms[playerRoom].grid = [];
-          // transmit to all other players and reset
-          io.emit('resetRoom', room[playerRoom]); // not written in main code yet
-        }
+    var gridId =  data.gridId;
 
-        // check if user already has a username
-        if (playerName === "") {
-          socket.emit('activateShapePromptUsernameInput', shape);
-        }
-        else {
-          rooms[playerRoom].playerName[playerShape] = playerName;
-          // broadcast username
-        }
-      }
-      else {
-      // if not available
-      // send info to user that room is not available
-        // io.emit('shapeNotAvailable', shape);
-      }
-    }
-
-    if (rooms[playerRoom].playerId.X !== '' && rooms[playerRoom].playerId.O !== '') {
-        rooms[playerRoom].grid = [];
-        if (Math.random() < 0.5) {
-          rooms[playerRoom].turn = 'X';
-          rooms[playerRoom].startingPlayer = 'X';
-        }
-        else {
-          rooms[playerRoom].turn = 'O';
-          rooms[playerRoom].startingPlayer = 'O';
-        }
-        // broadcast turn
-        io.emit('displayTurn', rooms[playerRoom].turn);
-    }
-    // rooms[playerRoom].turn = 'hi';
-
-  });
-
-  socket.on('usernameInput', function(username){
-    if (playerRoom >= 1 && playerRoom <=9 &&
-        (playerShape == 'X' || playerShape == 'O') )  {
-      playerName = username;
-      rooms[playerRoom].playerName[playerShape] = username;
-      // broadcast username
-    }
-
-  });
-
-  socket.on('clickOnAGrid', function(gridId){
-    if (rooms[playerRoom].pauseplay === false && gridId>= 0 && gridId<=8) {
+    if (rooms[socket.roomId].gamestart === true && gridId>= 0 && gridId<=8) {
       // check if user is a player in the room
       // check if it's users' turn
       // check if grid is empty
 
-      if (rooms[playerRoom].playerId.X !== '' && rooms[playerRoom].playerId.O !== '') {
-        //check if the player is in the room
-        if (rooms[playerRoom].turn === playerShape) {
-          if (rooms[playerRoom].grid[gridId] === undefined) {
-            rooms[playerRoom].grid[gridId] = playerShape;
-            // if yes then place grid and shape
-            io.emit('placeGrid', [gridId,playerShape]);
-            rooms[playerRoom].turn = otherShape(rooms[playerRoom].turn);
-            io.emit('displayTurn', rooms[playerRoom].turn);
-          }
-        }
+      if (rooms[socket.roomId].gamestart && isTurn(rooms[socket.roomId].turn) && placeGrid(gridId)) {
 
-        g = rooms[playerRoom].grid;
-
-        if ( (g[0] === g[1] && g[1] === g[2] && g[2] === playerShape) || (g[3] === g[4] && g[4] === g[5] && g[5] === playerShape) || 
-             (g[6] === g[7] && g[7] === g[8] && g[8] === playerShape) || (g[0] === g[3] && g[3] === g[6] && g[6] === playerShape) || 
-             (g[1] === g[4] && g[4] === g[7] && g[7] === playerShape) || (g[2] === g[5] && g[5] === g[8] && g[8] === playerShape) || 
-             (g[0] === g[4] && g[4] === g[8] && g[8] === playerShape) || (g[2] === g[4] && g[4] === g[6] && g[6] === playerShape) ) {
-          // check if player win
-          io.emit('player win', playerShape);
-          // reset room
-          playerScore++;
-          rooms[playerRoom].playerScore[playerShape]++;
-          io.emit('score update', rooms[playerRoom].playerScore);
-          rooms[playerRoom].grid = [];
-          rooms[playerRoom].startingPlayer = otherShape(rooms[playerRoom].startingPlayer);
-          rooms[playerRoom].turn = rooms[playerRoom].startingPlayer;
-          // transmit to all other players and reset
-          rooms[playerRoom].pauseplay = true;
-          setTimeout(function() {
-            io.emit('resetRoom', ''); // only to viewers of this room
-            rooms[playerRoom].pauseplay = false;
-            io.emit('displayTurn', rooms[playerRoom].turn);
-          }, 1000);
-        }
+        g = rooms[socket.roomId].grid;
+        shape = rooms[socket.roomId].turn;
 
         var gridComplete = true;
 
@@ -159,98 +64,175 @@ io.on('connection', function(socket){
           }
         }
 
-        console.log(gridComplete);
+        // If there is a winning combination
+        if ( (g[0] === g[1] && g[1] === g[2] && g[2] === shape) || 
+             (g[3] === g[4] && g[4] === g[5] && g[5] === shape) || 
+             (g[6] === g[7] && g[7] === g[8] && g[8] === shape) || 
+             (g[0] === g[3] && g[3] === g[6] && g[6] === shape) || 
+             (g[1] === g[4] && g[4] === g[7] && g[7] === shape) || 
+             (g[2] === g[5] && g[5] === g[8] && g[8] === shape) || 
+             (g[0] === g[4] && g[4] === g[8] && g[8] === shape) || 
+             (g[2] === g[4] && g[4] === g[6] && g[6] === shape) ) {
 
-        if(gridComplete) {
-          io.emit('player draw', playerShape);
-          // reset room
-          rooms[playerRoom].grid = [];
-          rooms[playerRoom].startingPlayer = otherShape(rooms[playerRoom].startingPlayer);
-          rooms[playerRoom].turn = rooms[playerRoom].startingPlayer;
-          // transmit to all other players and reset
-          rooms[playerRoom].pauseplay = true;
-          setTimeout(function() {
-            io.emit('resetRoom', ''); // only to viewers of this room
-            rooms[playerRoom].pauseplay = false;
-            io.emit('displayTurn', rooms[playerRoom].turn);
-          }, 1000);
+          io.in(socket.roomId).emit('player win', {shape: shape});
+          rooms[socket.roomId].playerScore[shape]++;
+          io.in(socket.roomId).emit('score update', {
+            score: rooms[socket.roomId].playerScore[shape],
+            shapeId: shapeToId(rooms[socket.roomId].turn)
+          });
+          nextGame();
+        }
+        // There's no moves left
+        else if(gridComplete) {
+          io.in(socket.roomId).emit('player draw', {});
+          nextGame();
+        }
+        // Play next turn
+        else {
+          rooms[socket.roomId].turn = otherShape(rooms[socket.roomId].turn);
+          io.in(socket.roomId).emit('game turn', {
+            turn: rooms[socket.roomId].turn
+          });
         }
       }
     }
-
   });
 
-  socket.on('exitRoom', function(empty){
-    // remove player from room
-    if (playerShape == 'X' || playerShape == 'O') {
-      // remove player from shape
-      rooms[playerRoom].playerId[playerShape] = '';
-      rooms[playerRoom].playerName[playerShape] = '';
-      rooms[playerRoom].playerScore[playerShape] = 0;
-      rooms[playerRoom].grid = [];
-      rooms[playerRoom].startingPlayer = '';
-      rooms[playerRoom].turn = '';
-      io.emit('displayTurn', rooms[playerRoom].turn);
-      // transmit to all other players and reset
-      socket.broadcast.emit('resetRoom', room[playerRoom]); // not written in main code yet
-    }
+  function removePlayer(shapeId) {
+    var shape = idToShape(shapeId);
 
-    for (var i = 0; i < rooms[playerRoom].viewers.length; i++) {
-      if (rooms[playerRoom].viewers[i] === playerId) {
-        rooms[playerRoom].viewers.splice(i, 1);
+    if (rooms[socket.roomId].playerId[shape] === socket.id) {
+      rooms[socket.roomId].playerId[shape] = '';
+      socket.emit('shape deselection successful', {
+        shapeId: shapeId
+      });
+
+      io.in(socket.roomId).emit('shape deselected', {
+        shapeId: shapeId
+      });
+
+      // If there were two players, reset the grid
+      if (rooms[socket.roomId].playerId[otherShape(shape)] !== '') {
+        resetRoom();
+        io.in(socket.roomId).emit('score update', {
+          shapeId: shapeToId(otherShape(shape)),
+          score: rooms[socket.roomId].playerScore[otherShape(shape)]
+        });
       }
+      return true;
     }
+    return false;
+  }
 
-    playerRoom = 0;
-    playerShape = "";
-    playerScore = 0;
-
-
-  });
-
-
-  socket.on('disconnect', function() {
-    // remove player from room
-    if (playerShape == 'X' || playerShape == 'O') {
-      // remove player from shape
-      rooms[playerRoom].playerId[playerShape] = '';
-      rooms[playerRoom].playerName[playerShape] = '';
-      rooms[playerRoom].playerScore[playerShape] = 0;
-      rooms[playerRoom].grid = [];
-      rooms[playerRoom].startingPlayer = '';
-      rooms[playerRoom].turn = '';
-      io.emit('displayTurn', rooms[playerRoom].turn);
-      // transmit to all other players and reset
-      io.emit('resetRoom', room[playerRoom]); // not written in main code yet
-    }
-
-    for (var i = 0; i < rooms[playerRoom].viewers.length; i++) {
-      if (rooms[playerRoom].viewers[i] === playerId) {
-        rooms[playerRoom].viewers.splice(i, 1);
-      }
-    }
-
-    playerRoom = 0;
-    playerShape = "";
-    playerScore = 0;
+  function addPlayer(shapeId) {
+    var shape = idToShape(shapeId);
     
-  });
+    if (rooms[socket.roomId].playerId[shape] === '') {
+      rooms[socket.roomId].playerId[shape] = socket.id;
+      socket.emit('shape selection successful', {
+        shapeId: shapeId
+      });
 
-  socket.on('retrieveServerInfo', function(empty) {
-    var data = [rooms, playerId, playerName, playerRoom, playerShape];
-    socket.emit('retrieveServerInfo', data);
-  });
+      io.in(socket.roomId).emit('shape selected', {
+        shapeId: shapeId
+      });
+
+      if (rooms[socket.roomId].playerId[otherShape(shape)] !== '') {
+        initialiseRoom();
+      }
+    }
+  }
+
+  function initialiseRoom() {
+    rooms[socket.roomId].grid = [];
+    rooms[socket.roomId].gamestart = true;
+    if (Math.random() < 0.5) {
+      rooms[socket.roomId].turn = 'X';
+      rooms[socket.roomId].startingPlayer = 'X';
+    }
+    else {
+      rooms[socket.roomId].turn = 'O';
+      rooms[socket.roomId].startingPlayer = 'O';
+    }
+
+    io.in(socket.roomId).emit('game start', {turn: rooms[socket.roomId].turn});
+  }
+
+  function resetRoom() {
+    rooms[socket.roomId].grid = [];
+    rooms[socket.roomId].gamestart = false;
+    rooms[socket.roomId].playerScore.X = 0;
+    rooms[socket.roomId].playerScore.O = 0;
+    rooms[socket.roomId].turn = '';
+    rooms[socket.roomId].startingPlayer = '';
+    io.in(socket.roomId).emit('reset grid', {});
+  }
+
+  function isTurn(shape) {
+    if (socket.id === rooms[socket.roomId].playerId[shape]) {
+      return true;
+    }
+    return false;
+  }
+
+  function placeGrid(gridId) {
+    if (rooms[socket.roomId].grid[gridId] === undefined) {
+      rooms[socket.roomId].grid[gridId] = rooms[socket.roomId].turn;
+      // if yes then place grid and shape
+      socket.broadcast.to(socket.roomId).emit('place grid', {
+        gridId: gridId,
+        shape: rooms[socket.roomId].turn,
+        playerTurn: false
+      });
+
+      socket.emit('place grid', {
+        gridId: gridId,
+        shape: rooms[socket.roomId].turn,
+        playerTurn: true
+      });
+
+      return true;
+    }
+    return false;
+  }
+
+  function nextGame() {
+    // transmit to all other players and reset
+    rooms[socket.roomId].gamestart = false;
+
+    setTimeout(function() {
+      rooms[socket.roomId].grid = [];
+      rooms[socket.roomId].startingPlayer = otherShape(rooms[socket.roomId].startingPlayer);
+      rooms[socket.roomId].turn = rooms[socket.roomId].startingPlayer;
+
+      io.in(socket.roomId).emit('reset grid', {});
+      io.in(socket.roomId).emit('game turn', {
+        turn: rooms[socket.roomId].turn
+      });
+      rooms[socket.roomId].gamestart = true;
+    }, 1000);
+  }
 });
 
+function otherShape(shape) {
+  if (shape === 'O') {return 'X';}
+  else if (shape === 'X') {return 'O';}
+  else {return '';}
+}
 
+function idToShape(shapeId) {
+  if (shapeId === 0) {return 'X';}
+  else if (shapeId === 1) {return 'O';}
+}
 
+function shapeToId(shape) {
+  if (shape === 'X') {return 0;}
+  else if (shape === 'O') {return 1;}
+}
 
 server.listen(port, function () {
-    console.log('Server listening at port %d', port);
+  console.log('Server listening at port %d', port);
 });
-
-// Routing
-// app.set('port', (process.env.PORT || 5000));
 
 app.use(express.static(__dirname + '/public'));
 

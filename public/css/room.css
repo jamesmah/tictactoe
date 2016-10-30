@@ -1,0 +1,64 @@
+.player-color {color: pink;}
+.player-color:hover {color: pink;}
+
+.scoreboard {
+  display: none;
+  position: absolute;
+  width: 100vw;
+}
+.scoreboard > div {
+  margin: .5vh 2vh 0 2vh;
+}
+.scoreboard h2, .scoreboard p {
+  margin: 2vh;
+}
+.scoreboard h2 {
+  font-size: 3.5vh;
+  margin-left: 2.3vh;
+  margin-right: 2.3vh;
+}
+.scoreboard p {
+  font-size: 2.5vh;
+  color: #1f2593;
+  border-radius: .5vh;
+  padding: .5vh;
+}
+.scoreboard p:hover {
+  background-color: #1f2593;
+  color: #fff;
+}
+.shape-select {
+  background-color: #fff;
+}
+.player-1 {
+  float: left;
+}
+.player-2 {
+  float: right;
+  text-align: right;
+}
+
+.shape-assigned {
+  color: pink;
+}
+
+@media screen and (max-aspect-ratio: 69/100) {
+  .scoreboard > div {
+    margin: calc(100/3/23*.5vw) calc(100/3/23*2vw) 0 calc(100/3/23*2vw);
+  }
+  .scoreboard h2, .scoreboard p {
+    margin: calc(100/3/23*2vw);
+  }
+  .scoreboard h2 {
+    font-size: calc(100/3/23*3.5vw);
+    margin-left: calc(100/3/23*2.3vw);
+    margin-right: calc(100/3/23*2.3vw);
+  }
+  .scoreboard p {
+    font-size: calc(100/3/23*2.5vw);
+    background-color: #fff;
+    color: #1f2593;
+    border-radius: calc(100/3/23*.5vw);
+    padding: calc(100/3/23*.5vw);
+  }
+}

@@ -1,43 +1,68 @@
-.anima {
-    animation-duration: 2s;
-    opacity: 0;
-    animation-timing-function: ease-in-out;
+.grid {
+  display: none;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
 }
 
-.anima1 {
-    animation-name: example1;
+.grid span {
+  display: none;
 }
 
-@keyframes example1 {
-    0%   {transform: scale(1, 1);
-          opacity: 1;}
-    100% {transform: scale(3, 3)
-                     translate(33.333%, 33.333%);
-          opacity: 0;}
+.zoom-1 {animation-name: zoom1;}
+.zoom-2 {animation-name: zoom2;}
+.zoom-3 {animation-name: zoom3;}
+.zoom-4 {animation-name: zoom4;}
+.zoom-5 {animation-name: zoom5;}
+.zoom-6 {animation-name: zoom6;}
+.zoom-7 {animation-name: zoom7;}
+.zoom-8 {animation-name: zoom8;}
+.zoom-9 {animation-name: zoom9;}
+@keyframes zoom1 {
+    0%   {transform: scale(1, 1);}
+    100% {transform: scale(3, 3) translate(33.333%, 33.333%);}
+}
+@keyframes zoom2 {
+    0%   {transform: scale(1, 1);}
+    100% {transform: scale(3, 3) translate(0%, 33.333%);}
+}
+@keyframes zoom3 {
+    0%   {transform: scale(1, 1);}
+    100% {transform: scale(3, 3) translate(-33.333%, 33.333%);}
+}
+@keyframes zoom4 {
+    0%   {transform: scale(1, 1);}
+    100% {transform: scale(3, 3) translate(33.333%, 0%);}
+}
+@keyframes zoom5 {
+    0%   {transform: scale(1, 1);}
+    100% {transform: scale(3, 3) translate(0%, 0%);}
+}
+@keyframes zoom6 {
+    0%   {transform: scale(1, 1);}
+    100% {transform: scale(3, 3) translate(-33.333%, 0%);}
+}
+@keyframes zoom7 {
+    0%   {transform: scale(1, 1);}
+    100% {transform: scale(3, 3) translate(33.333%, -33.333%);}
+}
+@keyframes zoom8 {
+    0%   {transform: scale(1, 1);}
+    100% {transform: scale(3, 3) translate(0%, -33.333%);}
+}
+@keyframes zoom9 {
+    0%   {transform: scale(1, 1);}
+    100% {transform: scale(3, 3) translate(-33.333%, -33.333%);}
 }
 
-
-.anima7 {
-    animation-name: example6;
-}
-
-@keyframes example7 {
-    0%   {transform: scale(1, 1);
-          opacity: 1;}
-    100% {transform: scale(3, 3)
-                     translate(33.333%, -33.333%);
-          opacity: 0;}
-}
-
-
-
-
-section.watermark {
+.col-1 span {
   position: absolute;
-  left: calc(100vw/2 - 10vh/2);
-  width: 10vh;
-  text-align: center;
-  font-size: 4vh;
-  margin: auto;
-  bottom: 0%;
+  left: 29%;
 }
+
+.rotate-360 {animation: rotate360 2s;}
+@keyframes rotate360 {
+    0%   {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+}
+
+
