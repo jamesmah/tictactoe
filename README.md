@@ -1,5 +1,12 @@
 # TicTacToe
-[Heroku link](https://tranquil-bayou-42227.herokuapp.com/)
+[tictactoe.mahjam.es](https://tictactoe.mahjam.es/)
+
+---
+
+*-- 30 October 2016 --*
+
+* Implemented socket rooms, ejs, expressjs
+
 
 ---
 
