@@ -13,8 +13,10 @@ setTimeout(function() {
     if (squareIdCount === 9){
       clearInterval(interval);
       $(".grid span:contains('T')").addClass("rotate-360");
+      setTimeout(function() {
+        initNumberHover();
+      },2000);
     }
-    console.log('hi');
   }, 300);
 });
 
@@ -35,3 +37,15 @@ $('.square, .ttt').click(function() {
     }, 2000);
   }
 });
+
+
+function initNumberHover() {
+  $( ".grid > div > div" ).mouseenter( function(){
+    var index = $( ".grid > div > div" ).index($(event.target));
+    $(event.target).text(index + 1);
+  } )
+  .mouseleave( function() {
+    var index = $( ".grid > div > div" ).index($(event.target));
+    $(event.target).text(tictactoe[index]);
+  } );
+}
