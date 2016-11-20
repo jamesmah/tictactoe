@@ -1,4 +1,4 @@
-$('.message, .scoreboard').fadeIn(1000);
+$('.message, .scoreboard, .grid').fadeIn(1000);
 
 var socket = io();
 socket.roomId =  location.pathname.replace(/[\/]/g, "");

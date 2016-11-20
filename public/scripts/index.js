@@ -30,11 +30,10 @@ $('.square, .ttt').click(function() {
     setTimeout(function() {
       $('.square, .message').css('color', 'transparent');
       $('.grid').removeClass('zoom-' + gridId );
-      $('.grid').fadeIn(1000);
     }, 1000);
     setTimeout(function() {
       window.location = "/" + gridId;
-    }, 2000);
+    }, 1000);
   }
 });
 

@@ -46,6 +46,9 @@ section {
 }
 
 .grid {
+  display: none;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
   left: calc(100vw/2 - 69vh/2);
   top: 17vh;
   width: 69vh;
