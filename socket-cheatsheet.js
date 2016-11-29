@@ -26,7 +26,7 @@ socket.broadcast.to(socketid).emit('message', 'for your eyes only');
 socket.join('some room');
 
 // then simply use to or in (they are the same) when broadcasting or emitting (server-side)
-io.to('some room').emit('some event'):
+io.to('some room').emit('some event');
 
 // leave to unsubscribe the socket to a given channel (server-side)
 socket.leave('some room');

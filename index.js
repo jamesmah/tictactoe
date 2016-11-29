@@ -243,7 +243,7 @@ app.get('/', function(request, response) {
 });
 
 app.get('/:id', function(request, response){
-  var roomId = request.url.replace(/[\/]/g, "");
+  var roomId = request.params.id;
   if (roomId >= 1 && roomId <= 9) {
     response.render('pages/room');
   }
