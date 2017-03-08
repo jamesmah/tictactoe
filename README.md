@@ -1,5 +1,5 @@
 # TicTacToe
-[tictactoe.mahjam.es](https://tictactoe.mahjam.es/)
+[jamesmah.github.io/tictactoe/](https://jamesmah.github.io/tictactoe/)
 ## Technologies used
 HTML, CSS, Javascript, jQuery, Node.js, Socket.io, Express.js, ejs
 
